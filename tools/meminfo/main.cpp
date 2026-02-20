@@ -24,6 +24,36 @@ If you encounter any bugs or issues, please open a pull request or submit an iss
 )";
 }
 
+static bool readMeminfoFile(std::unordered_map<std::string,long long>& out){
+    std::ifstream f("/proc/meminfo");
+    if(!f.is_open()){
+        return false;
+    }
+
+    std::string line;
+    while(std::getline(f,line)){
+        std::istringstream iss(line);
+
+        std::string key;
+        long long value;
+        std::string unit;
+
+        if(!(iss>>key>>value)){
+            continue;
+        }
+
+        if(!key.empty() && key.back() == ':'){
+            key.pop_back();
+        }
+
+        iss>>unit;
+
+        out[key] = value;
+    }
+
+    return true;
+}
+
 int main(){
 
     return 0;
