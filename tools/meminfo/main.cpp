@@ -54,6 +54,21 @@ static bool readMeminfoFile(std::unordered_map<std::string,long long>& out){
     return true;
 }
 
+static std::string getUnit(long long kB){
+    double bytes = (double)kB * 1024.0;
+    std::string units[]={"B","KB","MB","GB","TB"};
+    int i=0;
+    while(bytes>=1024.0 && i<4){
+        bytes = bytes / 1024.0;
+        i++;
+    }
+
+    std::ostringstream out;
+    out<<std::fixed<<std::setprecision(2)<<bytes<<" "<<units[i];
+
+    return out.str();
+}
+
 int main(){
 
     return 0;
