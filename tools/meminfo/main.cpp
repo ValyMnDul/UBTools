@@ -14,10 +14,10 @@ Usage:
   meminfo [--raw] [--human] [--json] [--help]
 
 Flags:
-  --raw     display values in kB (as they appear in /proc/meminfo)
-  --human   display in MB/GB (easier to read)
-  --json    output as JSON (for parsing)
-  --help    show this message
+  -r, --raw     display values in kB (as they appear in /proc/meminfo)
+  -u, --human   display in MB/GB (easier to read)
+  -j, --json    output as JSON (for parsing)
+  -h, --help    show this message
 
 If you encounter any bugs or issues, please open a pull request or submit an issue on GitHub.
 (https://github.com/valymndul/ubtools)
@@ -106,13 +106,13 @@ static void printJson(const std::unordered_map<std::string,long long>& m){
     };
 
     std::cout<<"{\n";
-    std::cout<<"\"MemTotal_KB\": "<<get("MemTotal")<<",\n";
-    std::cout<<"\"MemFree_KB\": "<<get("MemFree")<<",\n";
-    std::cout<<"\"MemAvailable_KB\": "<<get("MemAvailable")<<",\n";
-    std::cout<<"\"Buffers_KB\": "<<get("Buffers")<<",\n";
-    std::cout<<"\"Cached_KB\": "<<get("Cached")<<",\n";
-    std::cout<<"\"SwapTotal_KB\": "<<get("SwapTotal")<<",\n";
-    std::cout<<"\"SwapFree_KB\": "<<get("SwapFree")<<"\n";
+    std::cout<<"  \"MemTotal_KB\": "<<get("MemTotal")<<",\n";
+    std::cout<<"  \"MemFree_KB\": "<<get("MemFree")<<",\n";
+    std::cout<<"  \"MemAvailable_KB\": "<<get("MemAvailable")<<",\n";
+    std::cout<<"  \"Buffers_KB\": "<<get("Buffers")<<",\n";
+    std::cout<<"  \"Cached_KB\": "<<get("Cached")<<",\n";
+    std::cout<<"  \"SwapTotal_KB\": "<<get("SwapTotal")<<",\n";
+    std::cout<<"  \"SwapFree_KB\": "<<get("SwapFree")<<"\n";
     std::cout<<"}\n";
 }
 
@@ -130,7 +130,7 @@ int main(int argc,char* argv[]){
             return 0;
         } else if(arg=="--raw" || arg == "-r"){
             raw = true;
-        } else if(arg=="--human" || arg=="-h"){
+        } else if(arg=="--human" || arg=="-u"){
             human=true;
         } else if(arg=="--json" || arg=="-j"){
             json=true;
@@ -151,9 +151,19 @@ int main(int argc,char* argv[]){
         human = true;
     }
 
-    if(json){
+    int flags = 0;
+    if(raw) flags++;
+    if(human) flags++;
+    if(json) flags++;
+
+    if(flags>1){
+        std::cerr << "Error: use only one of --raw, --human, or --json\n";
+        return 1;
+    }
+
+    if (json) {
         printJson(m);
-    } else if(human){
+    } else if (human) {
         printHuman(m);
     } else if(raw){
         printRaw(m);
