@@ -29,7 +29,56 @@ If you encounter any bugs or issues, please open a pull request or submit an iss
 )";
 }
 
-int main(){
+static bool isNumber(std::string& s){
+    if(s.empty()) return false;
+    for(char c:s){
+        if(c<'0'||c>'9') return false;
+    }
+    return true;
+}
+
+int main(int argc,char* argv[]){
+
+    bool json = false;
+    bool noHeader = false;
+
+    std::string pid;
+
+    for(int i=1;i<argc;i++){
+        std::string arg = argv[i];
+
+        if(arg=="--help" || arg=="-h"){
+            printHelp();
+            return 0;
+        } else if(arg == "--json" || arg == "-j"){
+            json = true;
+        } else if(arg == "--no-header" || arg == "-n"){
+            noHeader = true;
+        } else if(!arg.empty() && arg[0] == '-'){
+            std::cerr<<"Unknown flag: "<< arg <<"\n";
+            std::cerr<<"Try: pstatus --help\n";
+            return 1;
+        } else {
+            if(!pid.empty()){
+                std::cerr<<"Error: only one <pid> allowed\n";
+                std::cerr<<"Try: pstatud --help\n";
+                return 1;
+            }
+            pid = arg;
+        }
+    }
+
+    if(pid.empty()){
+        std::cerr<<"Error: missing <pid>\n";
+        std::cerr<<"Try: pstatus --help\n";
+        return 1;
+    }
+
+    if(!isNumber(pid)){
+        std::cerr<<"Error: <pid> must be a number\n";
+        std::cerr<<"Try: pstatus --help\n";
+        return 1;
+    }
 
     return 0;
 }
