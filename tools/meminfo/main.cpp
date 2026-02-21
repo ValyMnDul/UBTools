@@ -69,22 +69,37 @@ static std::string getUnit(long long kB){
     return out.str();
 }
 
-    static void printRow(const std::unordered_map<std::string,long long> m){
-        auto get = [&](const std::string& k) -> long long {
-            auto it = m.find(k);
-            return (it == m.end()) ? -1 : (*it).second;
-        };
+static void printRow(const std::unordered_map<std::string,long long> m){
+    auto get = [&](const std::string& k) -> long long {
+        auto it = m.find(k);
+        return (it == m.end()) ? -1 : (*it).second;
+    };
 
-        std::cout<<"MemTotal:     "<<get("MemTotal")<<" KB\n";
-        std::cout<<"MemFree:      "<<get("MemFree")<<" KB\n";
-        std::cout<<"MemAvailable: "<<get("MemAvailable")<<" KB\n";
-        std::cout<<"Buffers:      "<<get("Buffers")<<" KB\n";
-        std::cout<<"Cached:       "<<get("Cached")<<" KB\n";
-        std::cout<<"SwapTotal:    "<<get("SwapTotal")<<" KB\n";
-        std::cout<<"SwapFree:     "<<get("SwapFree")<<" KB\n";
-    }
+    std::cout<<"MemTotal:     "<<get("MemTotal")<<" KB\n";
+    std::cout<<"MemFree:      "<<get("MemFree")<<" KB\n";
+    std::cout<<"MemAvailable: "<<get("MemAvailable")<<" KB\n";
+    std::cout<<"Buffers:      "<<get("Buffers")<<" KB\n";
+    std::cout<<"Cached:       "<<get("Cached")<<" KB\n";
+    std::cout<<"SwapTotal:    "<<get("SwapTotal")<<" KB\n";
+    std::cout<<"SwapFree:     "<<get("SwapFree")<<" KB\n";
+}
+
+static void printHuman(const std::unordered_map<std::string,long long> m){
+    auto get = [&](const std::string& k) -> long long {
+        auto it = m.find(k);
+        return (it == m.end()) ? -1 : (*it).second;
+    };
+
+    std::cout<<"MemTotal:     "<<getUnit(get("MemTotal"))<<"\n";
+    std::cout<<"MemFree:      "<<getUnit(get("MemFree"))<<"\n";
+    std::cout<<"MemAvailable: "<<getUnit(get("MemAvailable"))<<"\n";
+    std::cout<<"Buffers:      "<<getUnit(get("Buffers"))<<"\n";
+    std::cout<<"Cached:       "<<getUnit(get("Cached"))<<"\n";
+    std::cout<<"SwapTotal:    "<<getUnit(get("SwapTotal"))<<"\n";
+    std::cout<<"SwapFree:     "<<getUnit(get("SwapFree"))<<"\n";
+}
 
 int main(){
-
+    
     return 0;
 }
