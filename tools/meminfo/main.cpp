@@ -69,7 +69,7 @@ static std::string getUnit(long long kB){
     return out.str();
 }
 
-static void printRow(const std::unordered_map<std::string,long long> m){
+static void printRow(const std::unordered_map<std::string,long long>& m){
     auto get = [&](const std::string& k) -> long long {
         auto it = m.find(k);
         return (it == m.end()) ? -1 : (*it).second;
@@ -84,7 +84,7 @@ static void printRow(const std::unordered_map<std::string,long long> m){
     std::cout<<"SwapFree:     "<<get("SwapFree")<<" KB\n";
 }
 
-static void printHuman(const std::unordered_map<std::string,long long> m){
+static void printHuman(const std::unordered_map<std::string,long long>& m){
     auto get = [&](const std::string& k) -> long long {
         auto it = m.find(k);
         return (it == m.end()) ? -1 : (*it).second;
@@ -97,6 +97,23 @@ static void printHuman(const std::unordered_map<std::string,long long> m){
     std::cout<<"Cached:       "<<getUnit(get("Cached"))<<"\n";
     std::cout<<"SwapTotal:    "<<getUnit(get("SwapTotal"))<<"\n";
     std::cout<<"SwapFree:     "<<getUnit(get("SwapFree"))<<"\n";
+}
+
+static void printJson(const std::unordered_map<std::string,long long>& m){
+    auto get = [&](const std::string& k) -> long long {
+        auto it = m.find(k);
+        return (it==m.end()) ? -1 : (*it).second;
+    };
+
+    std::cout<<"{\n";
+    std::cout<<"\"MemTotal_KB\": "<<get("MemTotal")<<",\n";
+    std::cout<<"\"MemFree_KB\": "<<get("MemFree")<<",\n";
+    std::cout<<"\"MemAvailable_KB\": "<<get("MemAvailable")<<",\n";
+    std::cout<<"\"Buffers_KB\": "<<get("Buffers")<<",\n";
+    std::cout<<"\"Cached_KB\": "<<get("Cached")<<",\n";
+    std::cout<<"\"SwapTotal_KB\": "<<get("SwapTotal")<<",\n";
+    std::cout<<"\"SwapFree_KB\": "<<get("SwapFree")<<"\n";
+    std::cout<<"}\n";
 }
 
 int main(){
