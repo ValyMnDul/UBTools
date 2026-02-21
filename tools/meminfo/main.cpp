@@ -69,7 +69,7 @@ static std::string getUnit(long long kB){
     return out.str();
 }
 
-static void printRow(const std::unordered_map<std::string,long long>& m){
+static void printRaw(const std::unordered_map<std::string,long long>& m){
     auto get = [&](const std::string& k) -> long long {
         auto it = m.find(k);
         return (it == m.end()) ? -1 : (*it).second;
@@ -116,7 +116,48 @@ static void printJson(const std::unordered_map<std::string,long long>& m){
     std::cout<<"}\n";
 }
 
-int main(){
+int main(int argc,char* argv[]){
     
+    bool raw = false;
+    bool human = false;
+    bool json = false;
+
+    for(int i=1;i<argc;i++){
+        std::string arg = argv[i];
+        
+        if(arg=="--help" || arg=="-h"){
+            printHelp();
+            return 0;
+        } else if(arg=="--raw" || arg == "-r"){
+            raw = true;
+        } else if(arg=="--human" || arg=="-h"){
+            human=true;
+        } else if(arg=="--json" || arg=="-j"){
+            json=true;
+        } else {
+            std::cerr<<"Unknown flag: "<<arg<<"\n";
+            std::cerr<<"Try: meminfo --help\n";
+            return 1;
+        }
+    }
+
+    std::unordered_map<std::string,long long> m;
+    if(readMeminfoFile(m)==false){
+        std::cerr << "Failed to read /proc/meminfo\n";
+        return 2;
+    }
+
+    if(!raw && !human && !json) {
+        human = true;
+    }
+
+    if(json){
+        printJson(m);
+    } else if(human){
+        printHuman(m);
+    } else if(raw){
+        printRaw(m);
+    }
+
     return 0;
 }
