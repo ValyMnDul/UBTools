@@ -1,7 +1,7 @@
 #include <iostream>
 #include <fstream>
 #include <string>
-
+#include <unordered_map>
 
 static void printHelp(){
     std::cout<<
@@ -79,6 +79,8 @@ int main(int argc,char* argv[]){
         std::cerr<<"Try: pstatus --help\n";
         return 1;
     }
+
+    std::unordered_map<std::string,long long> m;
 
     return 0;
 }
