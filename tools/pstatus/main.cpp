@@ -21,8 +21,7 @@ Flags:
 Exit codes:
   0 Success
   1 Usage/incalid args
-  2 Cannot read /proc/<pid>/status (not found/ended)
-  3 Permission denied
+  2 Cannot read /proc/<pid>/status (not found/ended/permission denied)
 
 If you encounter any bugs or issues, please open a pull request or submit an issue on GitHub.
 (https://github.com/valymndul/ubtools)
@@ -35,6 +34,16 @@ static bool isNumber(std::string& s){
         if(c<'0'||c>'9') return false;
     }
     return true;
+}
+
+static std::string trimLeft(const std::string& s){
+    size_t i = 0;
+    int len = s.length();
+    while(i<len && (s[i]=='\t'||s[i]==' ')){
+        i++;
+    }
+
+    return s.substr(i);
 }
 
 static int readStaticFile(std::string& pid,std::unordered_map<std::string,std::string>& m){
@@ -52,10 +61,12 @@ static int readStaticFile(std::string& pid,std::unordered_map<std::string,std::s
         }
 
         std::string key = line.substr(0,i);
-        std::string value = line.substr(i+1);
+        std::string value = trimLeft(line.substr(i+1));
 
         m[key] = value;
     }
+
+    return 0;
 }
 
 int main(int argc,char* argv[]){
@@ -104,6 +115,12 @@ int main(int argc,char* argv[]){
     std::unordered_map<std::string,std::string> m;
 
     int code = readStaticFile(pid,m);
+    if(code != 0){
+        std::cerr<<"Error: failed to read /proc/"<<pid<<"/status\n";
+        std::cerr<<"Cause: process ended | not found | permission denied\n";
+    }
+
+    
 
     return 0;
 }
