@@ -2,6 +2,7 @@
 #include <fstream>
 #include <string>
 #include <unordered_map>
+#include <iomanip>
 
 static void printHelp(){
     std::cout<<
@@ -46,6 +47,10 @@ static std::string trimLeft(const std::string& s){
     return s.substr(i);
 }
 
+static std::string getOrNA(const std::unordered_map<std::string,std::string>& m,const std::string& key){
+
+}
+
 static int readStaticFile(std::string& pid,std::unordered_map<std::string,std::string>& m){
     std::string path = "/proc/"+pid+"/status";
     std::ifstream file(path);
@@ -74,7 +79,38 @@ static void printJson(const std::unordered_map<std::string,std::string>& m,const
 }
 
 static void printNormal(const std::unordered_map<std::string,std::string>& m, const std::string& pid, const bool& noHeader){
+    if(!noHeader){
+        std::cout<< "pstatus PID " << pid << "\n";
+        std::cout<< "-----------------------------\n";
+    }
 
+    struct Row {
+        const char* label;
+        const char* key;
+    };
+
+    Row rows[] = {
+        {"Name", "Name"},
+        {"State", "State"},
+        {"PID", "Pid"},
+        {"PPID", "PPid"},
+        {"Tgid", "Tgid"},
+        {"Threads", "Threads"},
+        {"Uid", "Uid"},
+        {"Gid", "Gid"},
+        {"VmRSS", "VmRSS"},
+        {"VmSize", "VmSize"},
+        {"VmData", "VmData"},
+        {"VmStk", "VmStk"},
+        {"VmExe", "VmExe"},
+        {"VmLib", "VmLib"},
+        {"voluntary_ctxt_switches", "voluntary_ctxt_switches"},
+        {"nonvoluntary_ctxt_switches", "nonvoluntary_ctxt_switches"},
+    };
+
+    for(const auto& row:rows){
+        std::cout << std::left << std::setw(24) << row.label << getOrNA(m,row.key) << "\n";
+    }
 }
 
 int main(int argc,char* argv[]){
