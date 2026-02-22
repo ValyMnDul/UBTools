@@ -37,6 +37,27 @@ static bool isNumber(std::string& s){
     return true;
 }
 
+static int readStaticFile(std::string& pid,std::unordered_map<std::string,std::string>& m){
+    std::string path = "/proc/"+pid+"/status";
+    std::ifstream file(path);
+    if(!file.is_open()){
+        return 2;
+    }
+
+    std::string line;
+    while(std::getline(file,line)){
+        size_t i = line.find(':');
+        if(i == std::string::npos){
+            continue;
+        }
+
+        std::string key = line.substr(0,i);
+        std::string value = line.substr(i+1);
+
+        m[key] = value;
+    }
+}
+
 int main(int argc,char* argv[]){
 
     bool json = false;
@@ -80,7 +101,9 @@ int main(int argc,char* argv[]){
         return 1;
     }
 
-    std::unordered_map<std::string,long long> m;
+    std::unordered_map<std::string,std::string> m;
+
+    int code = readStaticFile(pid,m);
 
     return 0;
 }
