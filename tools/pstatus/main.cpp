@@ -82,8 +82,49 @@ static int readStaticFile(std::string& pid,std::unordered_map<std::string,std::s
     return 0;
 }
 
+static std::string jsonFix(const std::string& value){
+    std::string out;
+    for(char c:value){
+        switch (c){
+            case '"':
+                out += "\\\"";
+                break;
+
+            case '\\':
+                out += "\\\\";
+                break;
+
+            case '\n':
+                out += "\\n";
+                break;
+
+            case '\r':
+                out += "\\r";
+                break;
+
+            case '\t':
+                out += "\\t";
+                break;
+            
+            default:
+                if((unsigned char)c < 0x20){
+                    out += '?';
+                } else {
+                    out += c;
+                }
+                break;
+        }
+    }
+
+    return out;
+}
+
 static void printJson(const std::unordered_map<std::string,std::string>& m,const std::string& pid){
-    
+    auto emitString = [&](const std::string& key,const std::string& value,bool col){
+        std::cout<<" \""<<key<<"\":\""<< jsonFix(value) << "\"";
+        std::cout<< (col ? ",\n":"\n");
+    };
+
 }
 
 static void printNormal(const std::unordered_map<std::string,std::string>& m, const std::string& pid, const bool& noHeader){
