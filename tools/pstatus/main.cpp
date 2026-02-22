@@ -48,7 +48,15 @@ static std::string trimLeft(const std::string& s){
 }
 
 static std::string getOrNA(const std::unordered_map<std::string,std::string>& m,const std::string& key){
+    auto it = m.find(key);
+    if(it == m.end()){
+        return "N/A";
+    }
+    if((*it).second.empty()){
+        return "N/A";
+    }
 
+    return (*it).second;
 }
 
 static int readStaticFile(std::string& pid,std::unordered_map<std::string,std::string>& m){
@@ -75,7 +83,7 @@ static int readStaticFile(std::string& pid,std::unordered_map<std::string,std::s
 }
 
 static void printJson(const std::unordered_map<std::string,std::string>& m,const std::string& pid){
-
+    
 }
 
 static void printNormal(const std::unordered_map<std::string,std::string>& m, const std::string& pid, const bool& noHeader){
