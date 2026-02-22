@@ -69,6 +69,14 @@ static int readStaticFile(std::string& pid,std::unordered_map<std::string,std::s
     return 0;
 }
 
+static void printJson(const std::unordered_map<std::string,std::string>& m,const std::string& pid){
+
+}
+
+static void printNormal(const std::unordered_map<std::string,std::string>& m, const std::string& pid, const bool& noHeader){
+
+}
+
 int main(int argc,char* argv[]){
 
     bool json = false;
@@ -118,9 +126,20 @@ int main(int argc,char* argv[]){
     if(code != 0){
         std::cerr<<"Error: failed to read /proc/"<<pid<<"/status\n";
         std::cerr<<"Cause: process ended | not found | permission denied\n";
+        return 2;
     }
 
-    
+    if(json && noHeader){
+        std::cerr<<"Error: use only one of --json, --no-header\n";
+        std::cerr<<"Try: pstatus --help\n";
+        return 1;
+    }
+
+    if(json){
+        printJson(m,pid);
+    } else {
+        printNormal(m,pid,noHeader);
+    }
 
     return 0;
 }
