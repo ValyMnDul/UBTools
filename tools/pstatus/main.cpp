@@ -22,7 +22,7 @@ Flags:
 
 Exit codes:
   0 Success
-  1 Usage/incalid args
+  1 Usage/invalid args
   2 Cannot read /proc/<pid>/status (not found/ended/permission denied)
 
 If you encounter any bugs or issues, please open a pull request or submit an issue on GitHub.
@@ -30,12 +30,25 @@ If you encounter any bugs or issues, please open a pull request or submit an iss
 )";
 }
 
-static bool isNumber(std::string& s){
+static bool isNumber(const std::string& s){
     if(s.empty()) return false;
     for(char c:s){
         if(c<'0'||c>'9') return false;
     }
     return true;
+}
+
+static std::string rmTabs(const std::string& s){
+    std::string out = "";
+    for(char c : s){
+        if(c == '\t'){
+            out += " ";
+        }
+        else {
+            out += c;
+        }
+    }
+    return out;
 }
 
 static std::string trimLeft(const std::string& s){
@@ -133,16 +146,16 @@ static long long parse(const std::string& s,bool& ok){
 
 static void printJson(const std::unordered_map<std::string,std::string>& m,const std::string& pid){
     auto emitString = [&](const std::string& key,const std::string& value,bool col){
-        std::cout<<"  \""<<key<<"\":\""<< jsonFix(value) << "\"";
+        std::cout<<"  \""<<key<<"\": \""<< jsonFix(value) << "\"";
         std::cout<< (col ? ",\n":"\n");
     };
 
-    auto emitNumOrStr = [&](const std::string& key, const std::string value, bool col){
+    auto emitNumOrStr = [&](const std::string& key, const std::string& value, bool col){
         bool ok = false;
         long long x = parse(value,ok);
-        std::cout<< "  \"" << key << "\":";
+        std::cout<< "  \"" << key << "\": ";
         if(ok){
-            std::cout << x <<"\n";
+            std::cout << x << (col ? ",\n" : "\n");
         } else {
             std::cout<< " \"" << jsonFix(value) << "\"" << (col ? ",\n" : "\n");
         }
@@ -158,8 +171,8 @@ static void printJson(const std::unordered_map<std::string,std::string>& m,const
     emitNumOrStr("Tgid", getOrNA(m, "Tgid"), true);
     emitNumOrStr("Threads", getOrNA(m, "Threads"), true);
 
-    emitString("Uid", getOrNA(m, "Uid"), true);
-    emitString("Gid", getOrNA(m, "Gid"), true);
+    emitString("Uid", rmTabs(getOrNA(m, "Uid")), true);
+    emitString("Gid", rmTabs(getOrNA(m, "Gid")), true);
     emitString("VmRSS", getOrNA(m, "VmRSS"), true);
     emitString("VmSize", getOrNA(m, "VmSize"), true);
     emitString("VmData", getOrNA(m, "VmData"), true);
@@ -197,8 +210,8 @@ static void printNormal(const std::unordered_map<std::string,std::string>& m, co
         {"VmStk", "VmStk"},
         {"VmExe", "VmExe"},
         {"VmLib", "VmLib"},
-        {"voluntary_ctxt_switches", "voluntary_ctxt_switches"},
-        {"nonvoluntary_ctxt_switches", "nonvoluntary_ctxt_switches"},
+        {"VCS", "voluntary_ctxt_switches"},
+        {"NVCS", "nonvoluntary_ctxt_switches"},
     };
 
     for(const auto& row:rows){
@@ -230,7 +243,7 @@ int main(int argc,char* argv[]){
         } else {
             if(!pid.empty()){
                 std::cerr<<"Error: only one <pid> allowed\n";
-                std::cerr<<"Try: pstatud --help\n";
+                std::cerr<<"Try: pstatus --help\n";
                 return 1;
             }
             pid = arg;
@@ -256,12 +269,6 @@ int main(int argc,char* argv[]){
         std::cerr<<"Error: failed to read /proc/"<<pid<<"/status\n";
         std::cerr<<"Cause: process ended | not found | permission denied\n";
         return 2;
-    }
-
-    if(json && noHeader){
-        std::cerr<<"Error: use only one of --json, --no-header\n";
-        std::cerr<<"Try: pstatus --help\n";
-        return 1;
     }
 
     if(json){
