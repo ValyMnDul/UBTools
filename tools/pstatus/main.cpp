@@ -3,6 +3,7 @@
 #include <string>
 #include <unordered_map>
 #include <iomanip>
+#include <sstream>
 
 static void printHelp(){
     std::cout<<
@@ -119,12 +120,55 @@ static std::string jsonFix(const std::string& value){
     return out;
 }
 
+static long long parse(const std::string& s,bool& ok){
+    ok = false;
+    std::istringstream iss(s);
+    long long x;
+    if(!(iss>>x)){
+        return 0;
+    }
+    ok = true;
+    return x;
+}
+
 static void printJson(const std::unordered_map<std::string,std::string>& m,const std::string& pid){
     auto emitString = [&](const std::string& key,const std::string& value,bool col){
-        std::cout<<" \""<<key<<"\":\""<< jsonFix(value) << "\"";
+        std::cout<<"  \""<<key<<"\":\""<< jsonFix(value) << "\"";
         std::cout<< (col ? ",\n":"\n");
     };
 
+    auto emitNumOrStr = [&](const std::string& key, const std::string value, bool col){
+        bool ok = false;
+        long long x = parse(value,ok);
+        std::cout<< "  \"" << key << "\":";
+        if(ok){
+            std::cout << x <<"\n";
+        } else {
+            std::cout<< " \"" << jsonFix(value) << "\"" << (col ? ",\n" : "\n");
+        }
+    };
+
+    std::cout << "{\n";
+    emitString("pid", pid, true);
+    emitString("Name", getOrNA(m, "Name"), true);
+    emitString("State" ,getOrNA(m, "State"), true);
+
+    emitNumOrStr("Pid", getOrNA(m, "Pid"), true);
+    emitNumOrStr("PPid", getOrNA(m, "PPid"), true);
+    emitNumOrStr("Tgid", getOrNA(m, "Tgid"), true);
+    emitNumOrStr("Threads", getOrNA(m, "Threads"), true);
+
+    emitString("Uid", getOrNA(m, "Uid"), true);
+    emitString("Gid", getOrNA(m, "Gid"), true);
+    emitString("VmRSS", getOrNA(m, "VmRSS"), true);
+    emitString("VmSize", getOrNA(m, "VmSize"), true);
+    emitString("VmData", getOrNA(m, "VmData"), true);
+    emitString("VmStk", getOrNA(m, "VmStk"), true);
+    emitString("VmExe", getOrNA(m, "VmExe"), true);
+    emitString("VmLib", getOrNA(m, "VmLib"), true);
+    emitString("voluntary_ctxt_switches", getOrNA(m, "voluntary_ctxt_switches"), true);
+    emitString("nonvoluntary_ctxt_switches", getOrNA(m, "nonvoluntary_ctxt_switches"), false);
+    std::cout << "}\n";
 }
 
 static void printNormal(const std::unordered_map<std::string,std::string>& m, const std::string& pid, const bool& noHeader){
