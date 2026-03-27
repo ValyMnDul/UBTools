@@ -53,7 +53,7 @@ static std::string rmTabs(const std::string& s){
 
 static std::string trimLeft(const std::string& s){
     size_t i = 0;
-    int len = s.length();
+    size_t len = s.length();
     while(i<len && (s[i]=='\t'||s[i]==' ')){
         i++;
     }
