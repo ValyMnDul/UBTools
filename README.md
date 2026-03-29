@@ -136,7 +136,7 @@ Run the tool:
 ./<tool_name> <arguments> [--help]
 ```
 
-### OR
+### OR Just
 
 Download the binary from the [releases page](https://github.com/valymndul/UBTools/releases)
 
