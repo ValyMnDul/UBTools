@@ -1,7 +1,7 @@
 # UBTools
 
 ## A toolkit for developers and system administrators
-### DEMO: https://www.youtube.com/watch?v=J5Qx9sxmJao
+
 This project includes a collection of terminal tools for **Debian-based Linux** distributions.
 
 It is designed to be simple, lightweight, and practical. Each tool is designed to help with system inspection, process analysis, resource monitoring, and troubleshooting.
